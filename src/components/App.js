@@ -6,7 +6,7 @@ import "../styles/App.css";
 
 const App = (props) => {
   const [buffer, setBuffer] = useState(null);
-  const [account, setAccount] = useState(null);
+  const [account, setAccount] = useState(props.drizzleState.accounts[0]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState({});
   const [balance, setBalance] = useState(0);
@@ -16,7 +16,6 @@ const App = (props) => {
     console.log(props);
     //* immediately invoked function
     (async () => {
-      setAccount(props.drizzleState.accounts[0]);
       setIPFS(await ipfs);
       try {
         const _user = (await fetchUser(account))[0];
