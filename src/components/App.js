@@ -6,40 +6,43 @@ import "../styles/App.css";
 
 const App = (props) => {
   const [buffer, setBuffer] = useState(null);
-  const [account, setAccount] = useState(props.drizzleState.accounts[0]);
+  const [account, setAccount] = useState(null);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState({});
   const [balance, setBalance] = useState(0);
   const [_ipfs, setIPFS] = useState(null);
 
   useEffect(() => {
-    //* immediately invoked function
-    (async () => {
-      setIPFS(await ipfs);
-      try {
-        const _user = (await fetchUser(account))[0];
-        if (Object.keys(_user).length === 0) {
-          throw new Error();
+    console.log(props)(
+      //* immediately invoked function
+      async () => {
+        setAccount(props.drizzleState.accounts[0]);
+        setIPFS(await ipfs);
+        try {
+          const _user = (await fetchUser(account))[0];
+          if (Object.keys(_user).length === 0) {
+            throw new Error();
+          }
+          setUser(_user);
+        } catch (error) {
+          const _user = (
+            await createUser(
+              account,
+              account,
+              "QmXiYAbTQP4yMbjbNVJc4NyPskY88gwXqSoMPBPHrarGTe",
+              0
+            )
+          )[0];
+          setUser(_user);
         }
-        setUser(_user);
-      } catch (error) {
-        const _user = (
-          await createUser(
-            account,
-            account,
-            "QmXiYAbTQP4yMbjbNVJc4NyPskY88gwXqSoMPBPHrarGTe",
-            0
-          )
-        )[0];
-        setUser(_user);
+        setBalance(
+          await props.drizzle.contracts.TZFEToken.methods
+            .balanceOf(account)
+            .call()
+        );
+        setLoading(false);
       }
-      setBalance(
-        await props.drizzle.contracts.TZFEToken.methods
-          .balanceOf(account)
-          .call()
-      );
-      setLoading(false);
-    })();
+    )();
   }, []);
 
   const onChangeUsername = (event) => {
