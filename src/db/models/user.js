@@ -21,7 +21,7 @@ async function createDB() {
 export const fetchUsers = async () => {
   const orbitdb = await _orbitdb;
   const address = await createDB();
-  const db = await orbitdb.open(
+  const db = await orbitdb.feed(
     "/orbitdb/zdpuAsK8ma37ttpPTP124Kn6VrFPYsaJP2f7h6Ydv4CzZJTda/orbit.users"
   );
   await db.load();
@@ -32,7 +32,7 @@ export const fetchUsers = async () => {
 export const fetchUser = async (account) => {
   const orbitdb = await _orbitdb;
   const address = await createDB();
-  const db = await orbitdb.open(
+  const db = await orbitdb.feed(
     "/orbitdb/zdpuAsK8ma37ttpPTP124Kn6VrFPYsaJP2f7h6Ydv4CzZJTda/orbit.users"
   );
   await db.load();
@@ -43,7 +43,7 @@ export const fetchUser = async (account) => {
 export const changeUser = async (account, username, imageHash, score) => {
   const orbitdb = await _orbitdb;
   const address = await createDB();
-  const db = await orbitdb.open(
+  const db = await orbitdb.feed(
     "/orbitdb/zdpuAsK8ma37ttpPTP124Kn6VrFPYsaJP2f7h6Ydv4CzZJTda/orbit.users"
   );
   await db.load();
@@ -63,7 +63,7 @@ export const changeUser = async (account, username, imageHash, score) => {
 export const createUser = async (account, username, imageHash, score) => {
   const orbitdb = await _orbitdb;
   const address = await createDB();
-  const db = await orbitdb.open(
+  const db = await orbitdb.feed(
     "/orbitdb/zdpuAsK8ma37ttpPTP124Kn6VrFPYsaJP2f7h6Ydv4CzZJTda/orbit.users"
   );
   await db.load();
