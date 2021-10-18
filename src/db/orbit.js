@@ -1,12 +1,21 @@
 import ipfs from "../ipfs";
 import OrbitDB from "orbit-db";
-import Identities from "orbit-db-identity-provider";
 
-async function Orbitdb() {
+export default (async function Orbitdb() {
   const _ipfs = await ipfs;
-  const options = { id: "local-id" };
-  const identity = await Identities.createIdentity(options);
-  return await OrbitDB.createInstance(_ipfs, { identity: identity });
-}
+  const orbitdb = await OrbitDB.createInstance(_ipfs);
+  const options = {
+    create: true,
+    accessController: {
+      write: ["*"],
+    },
+  };
+  const db = await orbitdb.docs("orbit.users", options);
 
-export default Orbitdb();
+  db.events.on("replicated", (address) => {
+    console.log(db.iterator({ limit: -1 }).collect());
+  });
+
+  console.log(db.address.toString());
+  return db;
+})();
