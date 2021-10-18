@@ -1,23 +1,13 @@
 import * as IPFS from "ipfs";
 
-console.log(process.env);
-console.log(window);
-
-const auth =
-  "Basic " +
-  Buffer.from(
-    process.env.PROJECT_ID + ":" + process.env.PROJECT_SECRET
-  ).toString("base64");
-
 const ipfsOptions = {
+  preload: { enabled: false },
   EXPERIMENTAL: {
     pubsub: true,
   },
-  host: "ipfs.infura.io",
-  port: 5001,
-  protocol: "https",
-  headers: {
-    authorization: auth,
+  config: {
+    Bootstrap: [],
+    Addresses: { Swarm: [] },
   },
 };
 
