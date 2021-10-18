@@ -11,11 +11,12 @@ export default (async function Orbitdb() {
     },
   };
   const db = await orbitdb.docs("orbit.users", options);
+  const db2 = await orbitdb.open(
+    "/orbitdb/zdpuAsK8ma37ttpPTP124Kn6VrFPYsaJP2f7h6Ydv4CzZJTda/orbit.users"
+  );
+  await db2.load();
+  db.events.on("peer", (peer) => console.log(peer));
 
-  db.events.on("replicated", (address) => {
-    console.log(db.iterator({ limit: -1 }).collect());
-  });
-
-  console.log(db.address.toString());
+  console.log(db2.get(""));
   return db;
 })();

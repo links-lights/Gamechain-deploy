@@ -15,7 +15,7 @@ export const fetchUser = async (account) => {
   // const db = await orbitdb.feed(
   //   "/orbitdb/zdpuAsK8ma37ttpPTP124Kn6VrFPYsaJP2f7h6Ydv4CzZJTda/orbit.users"
   // );
-  await db.load();
+  // await db.load();
   const user = await db.get(account);
   await db.close();
   return user;
