@@ -34,11 +34,11 @@ const App = (props) => {
         )[0];
         setUser(_user);
       }
-      setBalance(
-        await props.drizzle.contracts.TZFEToken.methods
-          .balanceOf(account)
-          .call()
-      );
+      // setBalance(
+      //   await props.drizzle.contracts.TZFEToken.methods
+      //     .balanceOf(account)
+      //     .call()
+      // );
       setLoading(false);
     })();
   }, []);
