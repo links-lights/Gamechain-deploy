@@ -7309,12 +7309,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0x7b5676A00A0f0305096e51A7A84Fe4c77Dd47a1b",
-      "transactionHash": "0xd30ed09f3d57b6659fd02d2058b3de088730f28225ac0668e94c712a06113eeb"
+      "address": "0x65F23BD48d765d60739Bb0812675de86ceE5E60E",
+      "transactionHash": "0x0096d7abef358834b6034d595a693027692e4641000840b1c37274489051f4a4"
     }
   },
   "schemaVersion": "3.4.3",
-  "updatedAt": "2021-10-17T18:28:56.104Z",
+  "updatedAt": "2021-10-18T16:01:41.266Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
