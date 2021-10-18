@@ -1,12 +1,12 @@
 import * as IPFS from "ipfs";
 
-console.log(process.env, environment);
+console.log(process.env);
 console.log(window);
 
 const auth =
   "Basic " +
   Buffer.from(
-    environment.PROJECT_ID + ":" + environmentv.PROJECT_SECRET
+    process.env.PROJECT_ID + ":" + process.env.PROJECT_SECRET
   ).toString("base64");
 
 const ipfsOptions = {
