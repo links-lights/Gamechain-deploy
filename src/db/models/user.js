@@ -9,6 +9,11 @@ async function createDB() {
     },
   };
   const db = await orbitdb.docs("orbit.users", options);
+
+  db.events.on("replicated", (address) => {
+    console.log(db.iterator({ limit: -1 }).collect());
+  });
+
   console.log(db.address.toString());
   return db.address.toString();
 }
