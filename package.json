@@ -16,6 +16,7 @@
     "history": "^5.0.1",
     "ipfs": "^0.59.1",
     "ipfs-http-client": "^53.0.1",
+    "ipfs-only-hash": "^4.0.0",
     "orbit-db": "^0.27.2",
     "orbit-db-identity-provider": "^0.4.0",
     "react": "^17.0.2",

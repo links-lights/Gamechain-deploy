@@ -11,17 +11,24 @@ export default (async function Orbitdb() {
     },
   };
   let db;
-  // try {
-  //   console.log("hell yeah");
-  db = await orbitdb.open(
-    "/orbitdb/zdpuAryTMHxhHjXtJ7hzkit1jMGXS21rLD2mSeo7PFJQEkaNF/orbit-users"
-  );
-  // } catch (error) {
-  // db = await orbitdb.docs("orbit-users", options);
-  console.log(db.address.toString());
-  // }
-  await db.load();
-  db.events.on("peer", (peer) => console.log(peer));
+  try {
+    console.log("hell yeah");
+    db = await orbitdb.docs(
+      "/orbitdb/zdpuAryTMHxhHjXtJ7hzkit1jMGXS21rLD2mSeo7PFJQEkaNF/orbit-users"
+    );
+    console.log(db.address.toString());
+    db.events.on("replicated", () => {
+      const result = db
+        .iterator({ limit: -1 })
+        .collect()
+        .map((e) => e.payload.value);
+      console.log(result.join("\n"));
+    });
+  } catch (error) {
+    console.error(error);
+    db = await orbitdb.docs("orbit-users", options);
+    console.log("NO", db.address.toString());
+  }
 
   return db;
 })();

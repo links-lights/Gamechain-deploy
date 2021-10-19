@@ -1,4 +1,5 @@
 import ipfs from "../ipfs";
+const Hash = require("ipfs-only-hash");
 
 const User = async (account, username, imageHash, score) => {
   const _ipfs = await ipfs;
@@ -13,7 +14,12 @@ const User = async (account, username, imageHash, score) => {
     score,
   });
 
-  await _ipfs.files.write(`/users/${account}.JSON`, userData, { create: true });
+  console.log(Hash.of("/"));
+  await _ipfs.files.write(
+    `QmcksMbHeYgkZ7yVG9XekNTLyfMJRHpd4TX8pGNGfyeTHh/users/${account}.JSON`,
+    userData,
+    { create: true }
+  );
 };
 
 export const fetchUsers = async () => {
@@ -21,7 +27,9 @@ export const fetchUsers = async () => {
   const users = [];
   for await (const file of _ipfs.files.ls(`/users/`)) {
     let chunks = [];
-    for await (const chunk of _ipfs.files.read(`/users/${file.name}`)) {
+    for await (const chunk of _ipfs.files.read(
+      `/QmcksMbHeYgkZ7yVG9XekNTLyfMJRHpd4TX8pGNGfyeTHh/users/${file.name}`
+    )) {
       chunks.push(chunk);
     }
     let _user = JSON.parse(Buffer.from(...chunks).toString("utf8"));
@@ -33,7 +41,9 @@ export const fetchUsers = async () => {
 export const setUser = async (account, highScore = 0) => {
   const _ipfs = await ipfs;
   const chunks = [];
-  for await (const chunk of _ipfs.files.read(`/users/${account}.JSON`)) {
+  for await (const chunk of _ipfs.files.read(
+    `/QmcksMbHeYgkZ7yVG9XekNTLyfMJRHpd4TX8pGNGfyeTHh/users/${account}.JSON`
+  )) {
     chunks.push(chunk);
   }
   const _user = JSON.parse(Buffer.from(...chunks).toString("utf8"));
