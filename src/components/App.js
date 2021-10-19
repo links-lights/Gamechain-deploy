@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ipfs from "../ipfs";
-import { fetchUser, changeUser, createUser } from "../db/models/user";
+import User from "../ipfs/user";
 
 import "../styles/App.css";
 
@@ -9,36 +9,47 @@ const App = (props) => {
   const [account, setAccount] = useState(props.drizzleState.accounts[0]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState({});
+  const [_ipfs, setIpfs] = useState(null);
   const [balance, setBalance] = useState(0);
-  const [_ipfs, setIPFS] = useState(null);
 
   useEffect(() => {
-    console.log(props);
     //* immediately invoked function
     (async () => {
-      setIPFS(await ipfs);
+      //* just for IPFS to work
+      let _ipfs_;
+      if (_ipfs) {
+        _ipfs_ = _ipfs;
+      } else {
+        _ipfs_ = await ipfs;
+        setIpfs(_ipfs_);
+      }
       try {
-        const _user = (await fetchUser(account))[0];
-        if (Object.keys(_user).length === 0) {
-          throw new Error();
+        //* How we can read the data from ipfs
+        const chunks = [];
+        for await (const chunk of _ipfs_.files.read(`/users/${account}.JSON`)) {
+          chunks.push(chunk);
         }
-        setUser(_user);
+        const _user = Buffer.from(...chunks).toString("utf8");
+        setUser(JSON.parse(_user));
       } catch (error) {
-        const _user = (
-          await createUser(
-            account,
-            account,
-            "QmXiYAbTQP4yMbjbNVJc4NyPskY88gwXqSoMPBPHrarGTe",
-            0
-          )
-        )[0];
+        await User(
+          account,
+          account,
+          "QmXiYAbTQP4yMbjbNVJc4NyPskY88gwXqSoMPBPHrarGTe",
+          0
+        );
+        const chunks = [];
+        for await (const chunk of _ipfs_.files.read(`/users/${account}.JSON`)) {
+          chunks.push(chunk);
+        }
+        const _user = JSON.parse(Buffer.from(...chunks).toString("utf8"));
         setUser(_user);
       }
-      // setBalance(
-      //   await props.drizzle.contracts.TZFEToken.methods
-      //     .balanceOf(account)
-      //     .call()
-      // );
+      setBalance(
+        await props.drizzle.contracts.TZFEToken.methods
+          .balanceOf(account)
+          .call()
+      );
       setLoading(false);
     })();
   }, []);
@@ -69,24 +80,21 @@ const App = (props) => {
   const onSubmit = async (event) => {
     event.preventDefault();
     //* ipfs api
-    let hash, _user;
+    let hash;
+    await _ipfs.files.rm(`/users/${account}.JSON`);
     if (buffer) {
       hash = await _ipfs.add(buffer);
-      _user = (
-        await changeUser(
-          account,
-          user.username,
-          hash.cid.toString(),
-          user.score
-        )
-      )[0];
+      await User(account, user.username, hash.cid.toString(), user.score);
     } else {
-      _user = (
-        await changeUser(account, user.username, user.imageHash, user.score)
-      )[0];
+      await User(account, user.username, user.imageHash, user.score);
     }
 
-    setUser(_user);
+    const chunks = [];
+    for await (const chunk of _ipfs.files.read(`/users/${account}.JSON`)) {
+      chunks.push(chunk);
+    }
+    const _user = Buffer.from(...chunks).toString("utf8");
+    setUser(JSON.parse(_user));
   };
   if (!loading && account) {
     return (

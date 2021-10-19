@@ -1,7 +1,27 @@
-import { fetchUsers } from "../db/models/user";
+import { fetchUsers } from "../ipfs/user";
 import React, { useState, useEffect } from "react";
 
 import "../styles/Scoreboard.css";
+
+// const Scoreboard = (props) => {
+//   const [users, setUsers] = useState([]);
+
+//   useEffect(() => {
+//     (async () => {
+//       const _users = await fetchUsers();
+//       _users.sort((user1, user2) => {
+//         return user2.score - user1.score;
+//       });
+//       setUsers(_users);
+//     })();
+//   }, []);
+
+//   return (
+
+//   );
+// };
+
+// export default Scoreboard;
 
 const Scoreboard = (props) => {
   const [users, setUsers] = useState([]);
