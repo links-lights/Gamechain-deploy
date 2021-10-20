@@ -14,11 +14,12 @@ export default (async function Orbitdb() {
   const db = await orbitdb.docs("orbit-users", options);
   console.log(db.address.toString());
   db.events.on("replicated", () => {
-    const result = db
-      .iterator({ limit: -1 })
-      .collect()
-      .map((e) => e.payload.value);
-    console.log(result.join("\n"));
+    // const result = db
+    //   .iterator({ limit: -1 })
+    //   .collect()
+    //   .map((e) => e.payload.value);
+    // console.log(result.join("\n"));
+    console.log("cool, new peer joined");
   });
 
   return db;
