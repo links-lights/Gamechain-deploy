@@ -2,16 +2,15 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./styles/index.css";
 import history from "./history";
-import DrizzleWrapper from "./components/DrizzleWrapper";
 import { BrowserRouter as Router } from "react-router-dom";
+import Routes from "./components/Routes";
 
 //Drizzle
 import { Drizzle, generateStore } from "@drizzle/store";
-import { DrizzleContext } from "@drizzle/react-plugin";
+import { drizzleReactHooks } from "@drizzle/react-plugin";
 import Greeter from "./artifacts/Greeter.json";
 import SimpleStorage from "./artifacts/SimpleStorage.json";
-import TZFEToken from './artifacts/TZFEToken.json';
-
+import TZFEToken from "./artifacts/TZFEToken.json";
 
 //Drizzle instance
 const options = { contracts: [Greeter, SimpleStorage, TZFEToken] };
@@ -22,11 +21,11 @@ const drizzle = new Drizzle(options, drizzleStore);
 
 ReactDOM.render(
   <React.StrictMode>
-    <DrizzleContext.Provider drizzle={drizzle}>
+    <drizzleReactHooks.DrizzleProvider drizzle={drizzle}>
       <Router history={history}>
-        <DrizzleWrapper />
+        <Routes />
       </Router>
-    </DrizzleContext.Provider>
+    </drizzleReactHooks.DrizzleProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

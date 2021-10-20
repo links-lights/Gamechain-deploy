@@ -1,7 +1,16 @@
 import React from "react";
-import { TableRow, TableCell, TableBody, Button, TableContainer, Paper, Grid, Table, Typography } from '@mui/material'
+import {
+  TableRow,
+  TableCell,
+  TableBody,
+  Button,
+  TableContainer,
+  Paper,
+  Grid,
+  Table,
+  Typography,
+} from "@mui/material";
 import { Box } from "@mui/system";
-
 
 class Game extends React.Component {
   constructor(props) {
@@ -14,8 +23,71 @@ class Game extends React.Component {
       message: null,
       rewarded: false,
       rewardAmount: 0,
-      highScore: 0,
+      extraTokens: false,
     };
+    // this.awardAmount = this.awardAmount.bind(this);
+    this.setReward = this.setReward.bind(this);
+    // this.setBoard = this.setBoard.bind(this);
+    this.probability = this.probability.bind(this);
+  }
+
+  probability(n) {
+    return Math.random() < n;
+  }
+
+  random() {
+    Math.floor(Math.random() * 4);
+  }
+  // Reward Player
+  async setReward() {
+    let highestBoard = 0;
+    const contract = this.props.contracts.TZFEToken;
+    const account = this.props.account;
+    let amount = 0;
+    let tokenOdds = 0;
+    this.state.board.forEach((row) => {
+      highestBoard = Math.max(...row, highestBoard);
+    });
+    if (highestBoard >= 4) {
+      tokenOdds += 0.02;
+    }
+    if (this.state.score >= 100) {
+      tokenOdds += 0.02;
+    }
+    if (highestBoard >= 8) {
+      tokenOdds += 0.03;
+    }
+    if (this.state.score >= 200) {
+      tokenOdds += 0.03;
+    }
+    if (highestBoard >= 2048) {
+      tokenOdds += 0.04;
+    }
+    if (this.state.score >= 20000) {
+      tokenOdds += 0.04;
+      this.setState({ extraTokens: true });
+    }
+    //make 100*
+    tokenOdds = 100;
+    console.log(`You have a ${tokenOdds * 100}% of getting a token`);
+
+    if (this.probability(tokenOdds)) {
+      if (this.extraTokens) {
+        amount = this.random();
+        await contract.methods.reward(account, amount).send({ from: account });
+        console.log("Odds are in your favor, you won a token!");
+        await this.props.awardAmount(amount + this.state.rewardAmount);
+      } else {
+        await contract.methods.reward(account, 1).send({ from: account });
+        await this.props.awardAmount(1 + this.state.rewardAmount);
+      }
+    } else {
+      console.log("Unfortunately the odds were not in your favor");
+    }
+
+    this.props.highScore();
+
+    console.log(await contract.methods.balanceOf(account).call());
   }
 
   // Create board with two random coordinate numbers
@@ -92,8 +164,8 @@ class Game extends React.Component {
               },
               () => {
                 if (!this.state.rewarded) {
-                  this.props.setBoard(this.state.board);
-                  this.setState({ rewarded: true }, this.props.setReward);
+                  // this.props.setBoard(this.state.board);
+                  this.setState({ rewarded: true }, this.setReward);
                   this.props.setScore(this.state.score);
                 }
               }
@@ -119,8 +191,8 @@ class Game extends React.Component {
               },
               () => {
                 if (!this.state.rewarded) {
-                  this.props.setBoard(this.state.board);
-                  this.setState({ rewarded: true }, this.props.setReward);
+                  // this.props.setBoard(this.state.board);
+                  this.setState({ rewarded: true }, this.setReward);
                   this.props.setScore(this.state.score);
                 }
               }
@@ -146,8 +218,8 @@ class Game extends React.Component {
               },
               () => {
                 if (!this.state.rewarded) {
-                  this.props.setBoard(this.state.board);
-                  this.setState({ rewarded: true }, this.props.setReward);
+                  // this.props.setBoard(this.state.board);
+                  this.setState({ rewarded: true }, this.setReward);
                   this.props.setScore(this.state.score);
                 }
               }
@@ -173,8 +245,8 @@ class Game extends React.Component {
               },
               () => {
                 if (!this.state.rewarded) {
-                  this.props.setBoard(this.state.board);
-                  this.setState({ rewarded: true }, this.props.setReward);
+                  // this.props.setBoard(this.state.board);
+                  this.setState({ rewarded: true }, this.setReward);
                   this.props.setScore(this.state.score);
                 }
               }
@@ -190,8 +262,8 @@ class Game extends React.Component {
     } else {
       this.setState({ message: "Game over. Please start a new game." }, () => {
         if (!this.state.rewarded) {
-          this.props.setBoard(this.state.board);
-          this.setState({ rewarded: true }, this.props.setReward);
+          // this.props.setBoard(this.state.board);
+          this.setState({ rewarded: true }, this.setReward);
         }
         this.props.setScore(this.state.score);
       });
@@ -399,53 +471,66 @@ class Game extends React.Component {
   render() {
     return (
       <Grid container direction="column" alignContent="center">
-        <Grid item sx={{
-          display: "flex",
-          justifyContent: "space-around"
-        }}>
-        <Button variant="contained"
-        sx={{
-          backgroundColor: "#303030",
-          color: "#50c8ff",
-          alignSelf:"center"
-        }}
-        onClick={() => {
-            this.initBoard();
-          }}>
-          New Game
-        </Button>
+        <Grid
+          item
+          sx={{
+            display: "flex",
+            justifyContent: "space-around",
+          }}
+        >
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#303030",
+              color: "#50c8ff",
+              alignSelf: "center",
+            }}
+            onClick={() => {
+              this.initBoard();
+            }}
+          >
+            New Game
+          </Button>
         </Grid>
 
-        <Grid item sx={{
-          display: "flex",
-          justifyContent: "space-around"
-        }}>
-        <Typography variant="h5">Score: {this.state.score}</Typography>
+        <Grid
+          item
+          sx={{
+            display: "flex",
+            justifyContent: "space-around",
+          }}
+        >
+          <Typography variant="h5">Score: {this.state.score}</Typography>
         </Grid>
 
         <Grid item>
-        <TableContainer component={Paper} sx={{
-          maxWidth:"440px",
-          Height: "440px",
-          backgroundColor: "#303030"
-        }}>
-          <Table>
-          {this.state.board.map((row, i) => (
-            <Row key={i} row={row} />
-          ))}
-          </Table>
-        </TableContainer>
+          <TableContainer
+            component={Paper}
+            sx={{
+              maxWidth: "440px",
+              Height: "440px",
+              backgroundColor: "#303030",
+            }}
+          >
+            <Table>
+              {this.state.board.map((row, i) => (
+                <Row key={i} row={row} />
+              ))}
+            </Table>
+          </TableContainer>
 
-        <Grid item sx={{
-          display: "flex",
-          justifyContent: "space-around"
-        }}>
-        <Typography variant="h6">{this.state.message}</Typography>
+          <Grid
+            item
+            sx={{
+              display: "flex",
+              justifyContent: "space-around",
+            }}
+          >
+            <Typography variant="h6">{this.state.message}</Typography>
           </Grid>
         </Grid>
       </Grid>
-
-    )
+    );
   }
 }
 
@@ -453,20 +538,19 @@ const Row = ({ row }) => {
   return (
     <TableBody>
       <TableRow>
-      {row.map((cell, i) => (
-           <Cell key={i} cellValue={cell} />
-         ))}
+        {row.map((cell, i) => (
+          <Cell key={i} cellValue={cell} />
+        ))}
       </TableRow>
     </TableBody>
   );
-
 };
 
 const Cell = ({ cellValue }) => {
   let value = cellValue === 0 ? "" : cellValue;
   //push value into color maker and get corresponding background color
   let bgColor;
-  switch(cellValue){
+  switch (cellValue) {
     case 2:
       bgColor = "#50c8ff";
       break;
@@ -492,37 +576,38 @@ const Cell = ({ cellValue }) => {
       bgColor = "pink";
       break;
     case 1024:
-      bgColor ="green";
+      bgColor = "green";
       break;
     case 2048:
-      bgColor ="blue"
+      bgColor = "blue";
       break;
-    default: bgColor ="#303030"
+    default:
+      bgColor = "#303030";
   }
   let dynamicColor = {
     backgroundColor: `${bgColor}`,
-    color: '#FFFFFF',
-    fontSize: '35px',
+    color: "#FFFFFF",
+    fontSize: "35px",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    height:"100%",
-    width:"100%",
-    borderRadius: "5px"
-  }
+    height: "100%",
+    width: "100%",
+    borderRadius: "5px",
+  };
 
   return (
-    <TableCell sx={{
-      height: "100px",
-      width: "100px",
-      backgroundColor: "#303030",
-      borderRadius: "5px",
-      padding:"5px",
-      border: "0px solid black"
-    }}>
-      <Box sx={dynamicColor}>
-      {value}
-      </Box>
+    <TableCell
+      sx={{
+        height: "100px",
+        width: "100px",
+        backgroundColor: "#303030",
+        borderRadius: "5px",
+        padding: "5px",
+        border: "0px solid black",
+      }}
+    >
+      <Box sx={dynamicColor}>{value}</Box>
     </TableCell>
   );
 };
