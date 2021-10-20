@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { drizzleReactHooks } from "@drizzle/react-plugin";
 import Game from "./Game";
 import TokenAward from "./TokenAward";
-import { Paper, Grid } from "@mui/material";
+import { Paper, Grid, Button } from "@mui/material";
 import RecipeReviewCard from "./GameDescripion";
 import { changeUser, fetchUser, createUser } from "../db/models/user";
 
@@ -10,18 +10,16 @@ function StartPage() {
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
   const [rewardAmount, setRewardAmount] = useState(0);
-  // const [board, setBoard] = useState([]);
   const [user, setUser] = useState({});
+  const [gameStart, setGameStart] = useState(false);
 
   const drizzleInstance = drizzleReactHooks.useDrizzle();
-  console.log("instance", drizzleInstance);
 
   const drizzleState = drizzleReactHooks.useDrizzleState((drizzleState) => ({
     accounts: drizzleState.accounts,
+    status: drizzleState.drizzleStatus,
   }));
-  console.log("this is drizzleState", drizzleState);
-
-  // const account = props.drizzleState.accounts[0];
+  console.log("this is high score is startPage", highScore, rewardAmount);
   const contracts = drizzleInstance.drizzle.contracts;
   const account = drizzleState.accounts[0];
 
@@ -40,9 +38,10 @@ function StartPage() {
           )[0];
         }
         setUser(_user);
-        setHighScore(_user.score);
+        if (_user.score) {
+          setHighScore(_user.score);
+        }
       }
-      // console.log('render', highScore, score, board, rewardAmount )
     })();
   }, [highScore, account]);
 
@@ -52,10 +51,35 @@ function StartPage() {
 
   async function postHighScore() {
     console.log("postHighScore fired");
-    if (score > highScore) {
-      setHighScore(score);
-      await changeUser(account, user.username, user.imageHash, score);
+    try {
+      if (score > highScore) {
+        setHighScore(score);
+        await changeUser(account, user.username, user.imageHash, score);
+      }
+    } catch (err) {
+      alert(err);
     }
+  }
+
+  function checkInitialize() {
+    if (drizzleState.status.initialized) {
+      const arrow_keys_handler = function (e) {
+        switch (e.code) {
+          case "ArrowUp":
+          case "ArrowDown":
+          case "ArrowLeft":
+          case "ArrowRight":
+          case "Space":
+            e.preventDefault();
+            break;
+          default:
+            break;
+        }
+      };
+      window.addEventListener("keydown", arrow_keys_handler, false);
+
+      setGameStart(!gameStart);
+    } else alert("Account not loaded, please try again");
   }
 
   return (
@@ -82,21 +106,32 @@ function StartPage() {
           <Grid item xs={2}>
             <RecipeReviewCard />
           </Grid>
-          <Grid item xs={8} sx={{ border: "1px solid black" }}>
-            <Game
-              contracts={contracts}
-              account={account}
-              awardAmount={awardAmount}
-              highScore={postHighScore}
-              setScore={setScore}
-            />
+          <Grid
+            item
+            xs={8}
+            container
+            justifyContent="center"
+            alignItems="center"
+            sx={{ border: "1px solid black" }}
+          >
+            {gameStart ? (
+              <Game
+                contracts={contracts}
+                account={account}
+                awardAmount={awardAmount}
+                highScore={postHighScore}
+                setScore={setScore}
+              />
+            ) : (
+              <Button onClick={() => checkInitialize()}>Start Game</Button>
+            )}
           </Grid>
           <Grid item xs={2}>
             <TokenAward highScore={highScore} rewardAmount={rewardAmount} />
           </Grid>
         </Grid>
         <Grid item className="footer" sx={{ border: "1px solid black" }}>
-          Footer here
+          {/* Enhancement: More information here */}
         </Grid>
       </Grid>
     </Paper>

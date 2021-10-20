@@ -26,12 +26,17 @@ const App = (props) => {
       console.log("should always have account", drizzleState.accounts);
       setIPFS(await ipfs);
       try {
-        const _user = (await fetchUser(account))[0];
-        if (Object.keys(_user).length === 0) {
-          throw new Error();
+        if (account) {
+          const _user = (await fetchUser(account))[0];
+          console.log("user", _user);
+          if (!_user) {
+            throw new Error();
+          }
+          setUser(_user);
         }
-        setUser(_user);
       } catch (error) {
+        console.log("noooooooooo");
+        console.error(error);
         const _user = (
           await createUser(
             account,

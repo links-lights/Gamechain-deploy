@@ -35,6 +35,7 @@ export const fetchUsers = async () => {
 };
 export const fetchUser = async (account) => {
   const db = await _db;
+  await db.load();
   const user = await db.get(account);
   return user;
 };
