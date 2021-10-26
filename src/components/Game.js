@@ -74,12 +74,26 @@ class Game extends React.Component {
       NFTodds += 0.001;
       this.setState({ extraTokens: true });
     }
+    if (this.state.score >= 40000) {
+      NFTodds += 0.001;
+    }
+    if (this.state.score >= 60000) {
+      NFTodds += 0.001;
+    }
+    if (this.state.score >= 80000) {
+      NFTodds += 0.001;
+    }
+    if (this.state.score >= 100000) {
+      NFTodds += 0.001;
+    }
     //make 100*
     console.log(`You have a ${tokenOdds * 100}% of getting a token`);
     console.log(`You have a ${NFTodds * 100}% of getting a NFT`);
 
     // const NFTBank = { 0: false, 1: false, 2: false, 3: false, 4: false };
-
+    //Testing purposes:
+    // tokenOdds= 1
+    // NFTodds = 1
     if (this.probability(tokenOdds)) {
       if (this.extraTokens) {
         amount = this.random(4);

@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import ipfs from "../ipfs";
+import axios from "axios";
+import { Link } from "react-router-dom";
+
 import {
   Button,
   Box,
@@ -35,16 +38,20 @@ const Account = (props) => {
   const [_ipfs, setIPFS] = useState(null);
   const [NFTs, setNFTs] = useState([]);
   const [edit, setEdit] = useState(false);
-  const [NFTMetadata, setNFTMetadata] = useState(null);
+  const [NFTMetadata, setNFTMetadata] = useState([]);
 
   //cycle
   useEffect(() => {
     //* immediately invoked function
     (async () => {
       const ipfs_ = await ipfs;
-      console.log("YYYESSSS", await contracts.GameNFT.methods.uri(0).call());
       console.log("should always have account", drizzleState.accounts);
       setIPFS(ipfs_);
+
+      const path = `https://ipfs.io/ipfs/${await contracts.GameNFT.methods
+        .uri(0)
+        .call()}`;
+
       console.log(
         "events",
         await drizzleInstance.drizzle.contracts.TZFEToken.events.allEvents()
@@ -72,13 +79,23 @@ const Account = (props) => {
         setUser(_user);
       }
       setBalance(await contracts.TZFEToken.methods.balanceOf(account).call());
-      setNFTs(
-        await contracts.GameNFT.methods
-          .balanceOfBatch(
-            [account, account, account, account, account],
-            [0, 1, 2, 3, 4]
-          )
-          .call()
+      const balance = await contracts.GameNFT.methods
+        .balanceOfBatch(
+          [account, account, account, account, account],
+          [0, 1, 2, 3, 4]
+        )
+        .call();
+
+      setNFTs(balance);
+      setNFTMetadata(
+        await Promise.all(
+          balance.map(async (num, ix) => {
+            const newPath = path + `/${ix}.json`;
+
+            const { data } = await axios.get(newPath);
+            return data;
+          })
+        )
       );
 
       setLoading(false);
@@ -91,6 +108,7 @@ const Account = (props) => {
 
   //render
   if (!loading && account) {
+    console.log(NFTMetadata);
     return (
       <Box
         display="grid"
@@ -159,20 +177,60 @@ const Account = (props) => {
               </Typography>
             </Box>
             <Box className="Tokens" gridColumn="span 6" p={5}>
-              <Typography variant="h4">Token Balance:</Typography>
+              <Typography variant="h4">Token Balance</Typography>
               <SpinningCoin /> {balance}
             </Box>
             <Box className="NFTs" gridColumn="span 6" p={5}>
-              <Typography variant="h4">NFTs:</Typography>
-              <ol>
-                {NFTs.map((NFT, idx) => {
-                  return (
-                    <li key={idx}>
-                      {NFT} {NFTMetadata}
-                    </li>
-                  );
-                })}
-              </ol>
+              <Typography variant="h4">Collectibles</Typography>
+              {NFTs.reduce((acc, cur) => acc + cur, 0) > 0 ? (
+                <ol>
+                  {NFTs.filter((num) => num > 0).map((NFT, idx) => {
+                    return (
+                      <Box
+                        display="flex"
+                        flexWrap="wrap"
+                        className="TokenCard"
+                        gridColumn="span 10"
+                        p={6}
+                        gap={10}
+                        sx={{
+                          maxHeight: "31vw",
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <Card>
+                          <CardHeader
+                            title={NFTMetadata[idx].name}
+                            sx={{
+                              height: "6vw",
+                            }}
+                          />
+                          <CardMedia
+                            component="img"
+                            alt={NFTMetadata[idx].name}
+                            image={NFTMetadata[idx].imageHash}
+                            sx={{
+                              height: "7vw",
+                            }}
+                          />
+                          <CardContent>
+                            <Typography>Quantity</Typography>
+                            <Divider />
+                            <Typography p={2} textAlign="center">
+                              {NFT}
+                            </Typography>
+                          </CardContent>
+                        </Card>
+                      </Box>
+                    );
+                  })}
+                </ol>
+              ) : (
+                <h4>Currently you do not have NFT (._. )( ._.)</h4>
+              )}
+
+              <h4>Want know more about our unique tokens? </h4>
+              <Link to="/metadata">Check out this page!</Link>
             </Box>
             {/* <Box gridColumn="span 12" p={5}>
                   Transactions
