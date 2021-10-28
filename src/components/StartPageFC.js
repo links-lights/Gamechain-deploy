@@ -26,36 +26,49 @@ function StartPage() {
 
   useEffect(() => {
     (async () => {
-      if (account) {
-        let _user = (await fetchUser(account))[0];
-        if (_user === undefined) {
-          _user = (
-            await createUser(
-              account,
-              account,
-              "QmXiYAbTQP4yMbjbNVJc4NyPskY88gwXqSoMPBPHrarGTe",
-              0
-            )
-          )[0];
+      try {
+        if (account) {
+          const _user = (await fetchUser(account))[0];
+          console.log("user", _user);
+          if (!_user) {
+            throw new Error();
+          }
+          setUser(_user);
+          if (_user.score > highScore) {
+            setHighScore(_user.score);
+          }
         }
+      } catch (error) {
+        console.log("noooooooooo");
+        console.error(error);
+        const _user = (
+          await createUser(
+            account,
+            account,
+            "QmXiYAbTQP4yMbjbNVJc4NyPskY88gwXqSoMPBPHrarGTe",
+            0
+          )
+        )[0];
+        console.log("user", _user);
         setUser(_user);
-        if (_user.score) {
+        if (_user.score > highScore) {
+          console.log("yes, im here no");
           setHighScore(_user.score);
         }
       }
     })();
-  }, [highScore, account]);
+  }, [account, user, highScore]);
 
   function awardAmount(amount) {
     setRewardAmount(amount);
   }
 
-  async function postHighScore() {
+  async function postHighScore(amount) {
     console.log("postHighScore fired");
     try {
-      if (score > highScore) {
-        setHighScore(score);
-        await changeUser(account, user.username, user.imageHash, score);
+      if (amount > highScore) {
+        setHighScore(amount);
+        await changeUser(account, user.username, user.imageHash, amount);
       }
     } catch (err) {
       alert(err);

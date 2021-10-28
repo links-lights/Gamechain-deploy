@@ -10,10 +10,11 @@ import {
 } from "@mui/material";
 
 const TokenAward = (props) => {
-  // const [state, setState] = useState(props);
+  const [state, setState] = useState(props);
   // console.log('insideTokenAward', state)
-  // useEffect( () => {
-  //     setState(props)},[props])
+  useEffect(() => {
+    setState(props);
+  }, [props]);
   return (
     <Grid
       container
@@ -43,7 +44,7 @@ const TokenAward = (props) => {
           <Typography variant="h4">Highest Score</Typography>
           <Divider />
           <Typography variant="h5" color="blue" p={1}>
-            {props.highScore}
+            {state.highScore}
           </Typography>
         </Box>
       </Grid>
@@ -67,7 +68,7 @@ const TokenAward = (props) => {
           <Typography variant="h4">Tokens won</Typography>
           <Divider />
           <Typography variant="h5" color="green" p={1}>
-            {props.rewardAmount}
+            {state.rewardAmount}
           </Typography>
         </Box>
       </Grid>

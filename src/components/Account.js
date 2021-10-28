@@ -87,6 +87,10 @@ const Account = (props) => {
         .call();
 
       setNFTs(balance);
+      console.log(
+        account,
+        await contracts.GameNFT.methods.balanceOf(account, 0).call()
+      );
       setNFTMetadata(
         await Promise.all(
           balance.map(async (num, ix) => {
