@@ -9,7 +9,7 @@ const SpinningMesh = ({ position, args, color, speed }) => {
   //* In load put whatever URL to change
   //* token texture
   const texture = new THREE.TextureLoader().load(
-    "https://ipfs.io/ipfs/QmSqW4dSSmEPo3envs3FP3wo226hnmdW8dtJd1xStzvJgE"
+    "https://ipfs.io/ipfs/QmQRZLR1z1STPj89yNM9UvALjwV4uPLAQsUBYS4yWrbQ6j"
   );
 
   useFrame(() => {
