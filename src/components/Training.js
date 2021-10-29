@@ -10,7 +10,7 @@ import {
   Table,
   Typography,
 } from "@mui/material";
-import { Box } from "@mui/system";
+import { Box, typography } from "@mui/system";
 
 class TrainingGame extends React.Component {
   constructor(props) {
@@ -350,13 +350,13 @@ class TrainingGame extends React.Component {
     const left = 37;
     const n = 78;
 
-    if (e.keyCode === up) {
+    if (e.keyCode === up || e.keyCode === 87) {
       this.move("up");
-    } else if (e.keyCode === right) {
+    } else if (e.keyCode === right || e.keyCode === 68) {
       this.move("right");
-    } else if (e.keyCode === down) {
+    } else if (e.keyCode === down || e.keyCode === 83) {
       this.move("down");
-    } else if (e.keyCode === left) {
+    } else if (e.keyCode === left || e.keyCode === 65) {
       this.move("left");
     } else if (e.keyCode === n) {
       this.initBoard();
@@ -365,59 +365,38 @@ class TrainingGame extends React.Component {
 
   render() {
     return (
-      <Box
-        sx={{
-          minHeight: "45vw",
-        }}
-      >
-        <Grid container direction="column" alignContent="center" p={10}>
-          <Grid
-            item
-            sx={{
-              display: "flex",
-              justifyContent: "space-around",
-            }}
-          >
-            <Button
-              variant="contained"
+      <>
+        <Typography variant="h3" p={2} textAlign="center">
+          Training
+        </Typography>
+        <Box
+          component={Paper}
+          sx={{
+            minHeight: "45vw",
+          }}
+        >
+          <Grid container direction="column" alignContent="center" p={10}>
+            <Grid
+              item
               sx={{
-                backgroundColor: "#303030",
-                color: "#50c8ff",
-                alignSelf: "center",
-              }}
-              onClick={() => {
-                this.initBoard();
+                display: "flex",
+                justifyContent: "space-around",
               }}
             >
-              New Game
-            </Button>
-          </Grid>
-
-          <Grid
-            item
-            sx={{
-              display: "flex",
-              justifyContent: "space-around",
-            }}
-          >
-            <Typography variant="h5">Score: {this.state.score}</Typography>
-          </Grid>
-
-          <Grid item>
-            <TableContainer
-              component={Paper}
-              sx={{
-                maxWidth: "440px",
-                Height: "440px",
-                backgroundColor: "#303030",
-              }}
-            >
-              <Table>
-                {this.state.board.map((row, i) => (
-                  <Row key={i} row={row} />
-                ))}
-              </Table>
-            </TableContainer>
+              <Button
+                variant="contained"
+                sx={{
+                  backgroundColor: "#303030",
+                  color: "#50c8ff",
+                  alignSelf: "center",
+                }}
+                onClick={() => {
+                  this.initBoard();
+                }}
+              >
+                New Game
+              </Button>
+            </Grid>
 
             <Grid
               item
@@ -426,11 +405,38 @@ class TrainingGame extends React.Component {
                 justifyContent: "space-around",
               }}
             >
-              <Typography variant="h6">{this.state.message}</Typography>
+              <Typography variant="h5">Score: {this.state.score}</Typography>
+            </Grid>
+
+            <Grid item>
+              <TableContainer
+                component={Paper}
+                sx={{
+                  maxWidth: "440px",
+                  Height: "440px",
+                  backgroundColor: "#303030",
+                }}
+              >
+                <Table>
+                  {this.state.board.map((row, i) => (
+                    <Row key={i} row={row} />
+                  ))}
+                </Table>
+              </TableContainer>
+
+              <Grid
+                item
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-around",
+                }}
+              >
+                <Typography variant="h6">{this.state.message}</Typography>
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
-      </Box>
+        </Box>
+      </>
     );
   }
 }
