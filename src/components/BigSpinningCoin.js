@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import * as THREE from "three";
+import ben from "../images/ben.jpg";
 
 import { Canvas, useFrame } from "@react-three/fiber";
 
@@ -8,9 +9,7 @@ const SpinningMesh = ({ position, args, color, speed }) => {
 
   //* In load put whatever URL to change
   //* token texture
-  const texture = new THREE.TextureLoader().load(
-    "https://ipfs.io/ipfs/QmQRZLR1z1STPj89yNM9UvALjwV4uPLAQsUBYS4yWrbQ6j"
-  );
+  const texture = new THREE.TextureLoader().load(ben);
 
   useFrame(() => {
     mesh.current.rotation.x = mesh.current.rotation.y += 0.01;

@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import * as THREE from "three";
 // SASS extension - SASS for CSS like TypeScript for JavaScript
 import "../styles/Three.scss";
+import ben from "../images/ben.jpg";
 
 import { Canvas, useFrame } from "@react-three/fiber";
 
@@ -11,9 +12,7 @@ softShadows();
 
 const SpinningMesh = ({ position, args, color, speed }) => {
   const mesh = useRef(null);
-  const texture = new THREE.TextureLoader().load(
-    "https://ipfs.io/ipfs/QmQRZLR1z1STPj89yNM9UvALjwV4uPLAQsUBYS4yWrbQ6j"
-  );
+  const texture = new THREE.TextureLoader().load(ben);
 
   useFrame(() => {
     mesh.current.rotation.x = mesh.current.rotation.y += 0.02;
